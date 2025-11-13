@@ -1,54 +1,138 @@
-## Prerequisites
+# Confirmly - AI-Powered RTO Reduction Platform
 
-- Node.js 20.x (Recommended)
+Reduce Return-to-Origin (RTO) losses by 60%+ with AI-powered order confirmation and risk scoring.
 
-## Installation
+## Architecture
 
-**Using Yarn (Recommended)**
+This is a monorepo containing:
 
-```sh
-yarn install
-yarn dev
+- **apps/web** - Next.js 14+ frontend application
+- **apps/api** - Fastify backend API
+- **apps/worker** - BullMQ workers for background jobs
+- **apps/ml** - Python FastAPI ML service for risk scoring
+- **packages/shared** - Shared TypeScript types
+- **packages/ui** - Shared UI components
+- **packages/config** - Configuration schemas
+
+## Tech Stack
+
+- **Frontend**: Next.js 14+, React, TypeScript, MUI, minimals.cc
+- **Backend**: Node.js, Fastify, TypeScript, MongoDB, Mongoose
+- **ML**: Python, FastAPI, XGBoost/LightGBM
+- **Queue**: BullMQ, Redis
+- **Billing**: Stripe
+- **Deployment**: Vercel (frontend), AWS EC2 (backend/ML/worker)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- PNPM 8+
+- Python 3.11+
+- MongoDB Atlas account
+- Redis instance
+- Docker (optional)
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd confirmly
 ```
 
-**Using Npm**
-
-```sh
-npm i
-npm run dev
+2. Install dependencies
+```bash
+pnpm install
 ```
 
-## Build
-
-```sh
-yarn build
-# or
-npm run build
+3. Set up environment variables
+```bash
+# Copy example env files
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+cp apps/ml/.env.example apps/ml/.env
 ```
 
-## Mock server
+4. Start development servers
+```bash
+# Start all services
+pnpm dev
 
-By default we provide demo data from : `https://api-dev-minimal-[version].vercel.app`
+# Or start individually
+pnpm dev:web
+pnpm dev:api
+pnpm dev:worker
+```
 
-To set up your local server:
+### Docker
 
-- **Guide:** [https://docs.minimals.cc/mock-server](https://docs.minimals.cc/mock-server).
+```bash
+# Start Redis
+docker-compose up -d redis
 
-- **Resource:** [Download](https://www.dropbox.com/sh/6ojn099upi105tf/AACpmlqrNUacwbBfVdtt2t6va?dl=0).
+# Build and run services
+docker build -t confirmly-api -f apps/api/Dockerfile .
+docker build -t confirmly-ml -f apps/ml/Dockerfile .
+```
 
-## Full version
+## Project Structure
 
-- Create React App ([migrate to CRA](https://docs.minimals.cc/migrate-to-cra/)).
-- Next.js
-- Vite.js
+```
+confirmly/
+├── apps/
+│   ├── web/          # Next.js frontend
+│   ├── api/           # Fastify backend
+│   ├── worker/        # BullMQ workers
+│   └── ml/            # Python FastAPI ML service
+├── packages/
+│   ├── shared/        # Shared TypeScript types
+│   ├── ui/            # Shared UI components
+│   └── config/        # Configuration schemas
+└── .github/
+    └── workflows/     # CI/CD workflows
+```
 
-## Starter version
+## API Documentation
 
-- To remove unnecessary components. This is a simplified version ([https://starter.minimals.cc/](https://starter.minimals.cc/))
-- Good to start a new project. You can copy components from the full version.
-- Make sure to install the dependencies exactly as compared to the full version.
+Once the API is running, visit:
+- Swagger UI: http://localhost:4000/docs
+- Health Check: http://localhost:4000/health
 
----
+## Development
 
-**NOTE:**
-_When copying folders remember to also copy hidden files like .env. This is important because .env files often contain environment variables that are crucial for the application to run correctly._
+### Running Tests
+
+```bash
+# Backend tests
+cd apps/api
+pnpm test
+
+# Frontend tests
+cd apps/web
+pnpm test
+```
+
+### Building
+
+```bash
+# Build all apps
+pnpm build
+
+# Build individual app
+pnpm build:web
+pnpm build:api
+```
+
+## Deployment
+
+See `.github/workflows/` for CI/CD configuration:
+- Frontend deploys to Vercel
+- Backend/ML/Worker deploy to AWS EC2
+- Database: MongoDB Atlas
+- Cache: Redis (ElastiCache or Upstash)
+
+## License
+
+Private - All rights reserved
